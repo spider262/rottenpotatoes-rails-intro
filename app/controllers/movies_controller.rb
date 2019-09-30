@@ -11,7 +11,63 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+  	@all_ratings = {'G'=>true,'PG'=>true,'PG-13'=>true,'R'=>true}
+  	
+  	
+  	@sort_by = session[:s_sortby]
+  	if params.has_key?(:sortby)
+  		if session[:s_sortby] != params[:sortby]
+  			session[:s_sortby] = params[:sortby]
+  			@sort_by = params[:sortby]
+  		end
+  	end
+  	if params.has_key?("ratings")
+  		if session[:sratings].keys != params["ratings"]
+  			if params["ratings"].keys.size > 0
+  				ratings = params["ratings"]
+  				ratings = ratings.keys
+  				@all_ratings.keys.each do |rating|
+  					if params["ratings"][rating] == "1"
+  						@all_ratings[rating] = true
+  					else
+  						@all_ratings[rating] = false
+  					end
+  				end
+  				session[:sratings]=@all_ratings
+  			end
+  		end
+  	end
+  	
+  	if session[:s_sortby] == "title"
+  		ratings = []
+  		session[:sratings].keys.each do |k|
+  			if session[:sratings][k] == true
+  				ratings.insert(0, k)
+  			end
+  		end
+  		@movies = Movie.where(:rating => ratings ).sort_by { |r| r.title }
+  		@all_ratings = session[:sratings]
+  		
+  	elsif session[:s_sortby] == "releasedate"
+  		ratings = []
+  		session[:sratings].keys.each do |k|
+  			if session[:sratings][k] == true
+  				ratings.insert(0, k)
+  			end
+  		end
+  		@movies = Movie.where(:rating => ratings ).sort_by { |r| r.release_date }
+  		@all_ratings = session[:sratings]
+  		
+  	else
+  		ratings = []
+  		@all_ratings.keys.each do |k|
+  			if @all_ratings[k] == true
+  				ratings.insert(0, k)
+  			end
+  		end
+  		session[:sratings] = @all_ratings
+  		@movies = Movie.where(:rating => ratings )
+  	end
   end
 
   def new
@@ -41,5 +97,5 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
+  
 end
