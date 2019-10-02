@@ -11,48 +11,64 @@ class MoviesController < ApplicationController
   end
   
   def index
-    @all_ratings = Movie.all.select('rating').distinct
-
-    if params.length == 2 && session[:lastparams] != nil 
-      redirect_to movies_path(session[:lastparams])
-      return
-    end
-
-    
-    #start sorting
-    sort=params[:sort]
-    case sort
-    when 'title'
-      @movies = Movie.where(rating: @ratings_set).order(title: :asc)
-      @title = "hilite"
-    when 'releasedate'
-      @movies = Movie.where(rating: @ratings_set).order(release_date: :asc)
-      @date = "hilite"
-    when nil
-       if session[:sort]!=nil
-       @movies = Movie.where(rating: @ratings_set)
-       end
-    end
-
-  
-
-    #start rating
-    if params[:commit] == "Refresh"
-      if params[:ratings] != nil
-        @ratings_set = params[:ratings].keys
-      elsif session[:rating_box].nil?
-      @ratings_set=@all_ratings
-      else
-      @ratings_set = session[:rating_box]
-      end
-    end
-
-    session[:lastparams] = params
-    session[:rating_box] = @ratings_set
-    session[:sort]=params[:sort]
-
+  	@all_ratings = {'G'=>true,'PG'=>true,'PG-13'=>true,'R'=>true}
+  	
+  	
+  	@sort_by = session[:s_sortby]
+  	if params.has_key?(:sortby)
+  		if session[:s_sortby] != params[:sortby]
+  			session[:s_sortby] = params[:sortby]
+  			@sort_by = params[:sortby]
+  		end
+  	end
+  	if params.has_key?("ratings")
+  		if session[:sratings].keys != params["ratings"]
+  			if params["ratings"].keys.size > 0
+  				ratings = params["ratings"]
+  				ratings = ratings.keys
+  				@all_ratings.keys.each do |rating|
+  					if params["ratings"][rating] == "1"
+  						@all_ratings[rating] = true
+  					else
+  						@all_ratings[rating] = false
+  					end
+  				end
+  				session[:sratings]=@all_ratings
+  			end
+  		end
+  	end
+  	
+  	if session[:s_sortby] == "title"
+  		ratings = []
+  		session[:sratings].keys.each do |k|
+  			if session[:sratings][k] == true
+  				ratings.insert(0, k)
+  			end
+  		end
+  		@movies = Movie.where(:rating => ratings ).sort_by { |r| r.title }
+  		@all_ratings = session[:sratings]
+  		
+  	elsif session[:s_sortby] == "releasedate"
+  		ratings = []
+  		session[:sratings].keys.each do |k|
+  			if session[:sratings][k] == true
+  				ratings.insert(0, k)
+  			end
+  		end
+  		@movies = Movie.where(:rating => ratings ).sort_by { |r| r.release_date }
+  		@all_ratings = session[:sratings]
+  		
+  	else
+  		ratings = []
+  		@all_ratings.keys.each do |k|
+  			if @all_ratings[k] == true
+  				ratings.insert(0, k)
+  			end
+  		end
+  		session[:sratings] = @all_ratings
+  		@movies = Movie.where(:rating => ratings )
+  	end
   end
-    
   
 
   def new
