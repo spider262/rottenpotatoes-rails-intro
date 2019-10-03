@@ -11,10 +11,11 @@ class MoviesController < ApplicationController
   end
   
   def index
-    @all_ratings = Movie.all.select('rating').distinct
+    #@all_ratings = Movie.all.select('rating').distinct
+    @movies = Movie.order(params[:sort_by])
 
 
-    
+=begin
     #start sorting
     sort=params[:sortby]
     case sort
@@ -29,6 +30,7 @@ class MoviesController < ApplicationController
        @movies = Movie.where(rating: @ratings_set)
        end
     end
+=end
 
 
 
