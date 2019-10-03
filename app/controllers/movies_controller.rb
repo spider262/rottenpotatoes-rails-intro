@@ -11,28 +11,28 @@ class MoviesController < ApplicationController
   end
   
   def index
-    #sort = params[:sort_by] || session[:sort_by]
-    @movies = Movie.order(params[:sort_by])
+
+    @sort = nil
+=begin
     @all_ratings = Movie.all_ratings
     @selected_ratings = params[:ratings] || session[:ratings] || {}
 
     if params[:sort_by] != session[:sort_by] or params[:ratings] != session[:ratings]
-      session[:sort_by] = sort
-      session[:ratings] = @selected_ratings
+      session[:sort_by] = params[:sort_by]
+      session[:ratings] = params[:ratings].keys
       redirect_to :sort_by => sort, :ratings => @selected_ratings and return
     end
-
-    @movies = @movies.where(:rating => params[:ratings].keys) if params[:ratings].present?
-=begin
-    #@all_ratings = Movie.all.select('rating').distinct
-    @all_ratings = Movie.all_ratings
-    @movies = Movie.order(params[:sort_by])   #sort
-    @selected_ratings = params[:ratings]
-    @movies = @movies.where(:rating => selected_ratings.keys) if params[:ratings].present?
-=end
-
-
-
+    @movies = session[:ratings] ? Movie.where(rating: session[:ratings]) : Movie.all
+=end    
+    if params[:sort_by] == "title"
+      @sort = { title: :asc }
+    elsif params[:sort_by] == "date"
+      @sort = { release_date: :asc }
+    end
+    
+    if not @sort.nil?
+      @movies = @movies.order(@sort_order)
+    end
 
   end
   
