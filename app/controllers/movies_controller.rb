@@ -11,7 +11,8 @@ class MoviesController < ApplicationController
   end
   
   def index
-
+    @movies = Movie.order(params[:sort_by])
+=begin
     @sort_order = nil
     if params[:sort_by] == "title"
       @sort_order = { title: :asc }
@@ -22,7 +23,7 @@ class MoviesController < ApplicationController
     @movies = Movie.order(@sort_order) unless @sort_order.nil?
     
     
-=begin
+
     @all_ratings = Movie.all_ratings
     @selected_ratings = params[:ratings] || session[:ratings] || {}
 
