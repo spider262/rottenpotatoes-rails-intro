@@ -30,9 +30,7 @@ class MoviesController < ApplicationController
       @sort = { release_date: :asc }
     end
     
-    if not @sort.nil?
-      @movies = @movies.order(@sort)
-    end
+    @movies = Movie.order(@sort) unless @sort.nil?
 
   end
   
