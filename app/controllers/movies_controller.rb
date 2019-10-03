@@ -11,15 +11,15 @@ class MoviesController < ApplicationController
   end
   
   def index
-    #sort = params[:sort] || session[:sort]
-    @movies = Movie.order(params[:sort])
+    sort = params[:sort_by] || session[:sort_by]
+    @movies = Movie.order(sort)
     @all_ratings = Movie.all_ratings
     @selected_ratings = params[:ratings] || session[:ratings] || {}
 
-    if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
-      session[:sort] = sort
+    if params[:sort_by] != session[:sort_by] or params[:ratings] != session[:ratings]
+      session[:sort_by] = sort
       session[:ratings] = @selected_ratings
-      redirect_to :sort => sort, :ratings => @selected_ratings and return
+      redirect_to :sort_by => sort, :ratings => @selected_ratings and return
     end
 
     @movies = @movies.where(:rating => params[:ratings].keys) if params[:ratings].present?
