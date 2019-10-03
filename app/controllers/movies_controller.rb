@@ -20,7 +20,7 @@ class MoviesController < ApplicationController
       @sort_order = { release_date: :asc }
     end
     
-    @movies = Movie.order(@sort_order)
+    @movies = Movie.order(@sort_order) unless @sort_order.nil?
 =begin    
     
 
