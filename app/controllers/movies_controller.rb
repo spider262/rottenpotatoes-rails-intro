@@ -27,7 +27,7 @@ class MoviesController < ApplicationController
     end                                             #part 1 sorting complete
     
     @all_ratings = Movie.all_ratings
-    @selected_ratings = params[:ratings] || session[:ratings] || {}
+    @selected_ratings = params[:ratings] || session[:ratings] || {}   #part 3
 
     if params[:sort_by] != session[:sort_by] or params[:ratings] != session[:ratings]
       session[:sort_by] = sort
