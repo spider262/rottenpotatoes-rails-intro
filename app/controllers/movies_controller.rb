@@ -12,25 +12,12 @@ class MoviesController < ApplicationController
   
   def index
     #@all_ratings = Movie.all.select('rating').distinct
-    @movies = Movie.order(params[:sort_by])
+    @all_ratings = Movie.all_ratings
+    @movies = Movie.order(params[:sort_by])   #sort
+    @selected_ratings = params[:ratings]
+    @movies = @movies.where(:rating => params[:ratings].keys) if params[:ratings].present?
 
 
-=begin
-    #start sorting
-    sort=params[:sortby]
-    case sort
-    when 'title'
-      @movies = Movie.where(rating: @ratings_set).order(title: :asc)
-      @title = "hilite"
-    when 'releasedate'
-      @movies = Movie.where(rating: @ratings_set).order(release_date: :asc)
-      @date = "hilite"
-    when nil
-       if session[:sortby]!=nil
-       @movies = Movie.where(rating: @ratings_set)
-       end
-    end
-=end
 
 
 
