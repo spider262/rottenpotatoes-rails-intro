@@ -31,7 +31,7 @@ class MoviesController < ApplicationController
     end
     
     if not @sort.nil?
-      @movies = @movies.order(@sort_order)
+      @movies = @movies.order(@sort)
     end
 
   end
