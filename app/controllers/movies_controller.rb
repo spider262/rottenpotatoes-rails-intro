@@ -32,9 +32,13 @@ class MoviesController < ApplicationController
     if params[:sort_by] != session[:sort_by] or params[:ratings] != session[:ratings]
       session[:sort_by] = sort
       session[:ratings] = @selected_ratings
-      redirect_to :sort_by => sort, :ratings => @selected_ratings and return
+      redirect_to :sort_by => sort, :ratings => @selected_ratings
+      return
     end
-    @movies = @movies.where(:rating => params[:ratings].keys) if params[:ratings].present?
+    
+    if params[:ratings].present? == true
+      @movies = @movies.where(:rating => params[:ratings].keys) 
+    end 
     
 
   end
